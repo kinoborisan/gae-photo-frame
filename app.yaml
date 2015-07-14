@@ -1,0 +1,34 @@
+application: aa-kukuri
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /css/(.*)
+  static_files: htdocs/css/\1
+  upload: htdocs/css/.*
+  mime_type: "text/css"
+
+- url: /css
+  static_dir: htdocs/css
+
+- url: /img
+  static_dir: htdocs/img
+  mime_type: "image/jpeg"
+
+- url: /js
+  static_dir: htdocs/js
+
+- url: /.*
+  script: main.app
+
+- url: /img/(.*\.(gif|png|jpg))$
+  static_files: htdocs/img/\1
+  upload: htdocs/img/.*\.(gif|png|jpg)$
+
+libraries:
+- name: webapp2
+  version: latest
+- name: django
+  version: "1.5"

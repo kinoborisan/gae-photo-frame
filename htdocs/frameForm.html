@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>さわーでぃー卒業おめでとう魚フレーム</title>
+<meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="start" href="/" title="ホーム">
+<link rel="stylesheet" href="/css/base.css" media="screen">
+<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'>
+</head>
+<body>
+<div id="wrapper">
+
+<!-- LH -->
+<header id="header">
+  <h1><a href="/">さわーでぃー卒業おめでとう魚フレーム</a></h1>
+<!-- /#header --></header>
+
+<section id="main">
+
+<div class="secFrameForm">
+	<p class="headline1">フレームを作ろう</p>
+
+<form action="/SetFrame" method="post" id="JForm1" enctype="multipart/form-data">
+
+<div class="secFrameFile">
+	<p class="headline2">フレームファイルを選択してください</p>
+	<p><input type="file" name="img1"></p>
+  <p>フレームファイルは、600×600pxの透過PNGを投稿してね</p>
+<!-- /.secFrameFile --></div>
+
+<p class="btn1"><button class="btn1Inner">フレームを作る</button></p>
+
+</form>
+
+<p class="headline2">フレーム一覧</p>
+<ul class="listFrame">
+{% for r in tlFrame %}
+  <li>
+    <p class="AMBm10"><img src="/FrameImage?img_id={{ r.key }}"></p>
+    <p><a href="/DeleteFrame?deleteID={{ r.key }}">このフレームを削除</a></p>
+  </li>
+{% endfor %}
+</ul>
+
+<!-- /AMBm20 --></div>
+
+
+<!-- /#main --></section>
+
+<footer id="footer">
+  <p class="btnHome"><a href="/">トップページへ</a></p>
+  <p>COPYRIGHT(C) 記念物制作委員会</p>
+<!-- /#footer --></footer>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+<!-- /wrapper --></div>
+</body>
+</html>

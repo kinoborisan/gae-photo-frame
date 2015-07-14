@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>さわーでぃー卒業おめでとう魚フレーム</title>
+<meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="start" href="/" title="ホーム">
+<link rel="stylesheet" href="/css/base.css" media="screen">
+<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'>
+</head>
+<body>
+
+<div id="wrapper">
+
+<!-- LH -->
+<header id="header">
+  <h1><a href="/">さわーでぃー卒業おめでとう魚フレーム</a></h1>
+<!-- /#header --></header>
+
+<section id="main">
+
+<div class="secEdit">
+	<p class="headline1">写真とメッセージを贈ろう。<br>※PCかiPadからご利用ください。</p>
+  <form action="/SetCard" method="post" enctype="multipart/form-data">
+
+  <div id="js--Photo1">
+	  <p class="headline1">■ まずは合成する画像を選択してね</p>
+	  <p><input type="file" class="SIpt1" name="img1" id="js--file--frame"></p>
+  </div>
+
+  <div class="secFrameSelect" id="js--FrameSelect">
+    <p class="headline1">■ フレームをえらぼう。</p>
+
+	  <ul class="listFrameSelect">{% for r in tlFrame %}
+      <li><label><img src="/FrameImage?img_id={{ r.key }}" width="90" height="90"><input class="js--radio--btn" type="radio" name="framePath" value="/FrameImage?img_id={{ r.key }}"></label></li>
+      {% if forloop.first %}
+      <style>
+        .secPhotoFrame .secFrame { background: url( /FrameImage?img_id={{ r.key }} ) 0 0 no-repeat;}
+      </style>
+      {% endif %}
+    {% endfor %}<!-- /.listFrameSelect --></ul>
+  <!-- /.secFrameSelect --></div>
+
+  <div class="secPhotoFrame" id="js--PhotoFrame">
+    <div class="secPhotoFrameInner">
+      <!-- 画像描画箇所 -->
+      <div class="secImg"><canvas id="js--canvas"></canvas></div>
+      <!-- フレーム描画箇所 -->
+      <div class="secFrame"></div>
+      <!-- ドラッグ用要素 -->
+      <div class="secDrag"><div class="secDragInner"></div></div>
+      <!-- /secPhotoFrameInner --></div>
+
+  　　<div class="secScale"><div class="secScaleInner">
+      <!-- サイズ調整など -->
+	    <ul>
+		    <li class="minus"><a href="#"></a></li>
+		    <li class="plus"><a href="#"></a></li>
+		    <li class="restart"><a href="#"></a></li>
+	    </ul>
+      <div class="secSlider"><div class="secSliderInner"></div></div>
+    <!-- /.secScale --></div></div>
+  <!-- /.secPhotoFrame --></div>
+
+
+<!-- /画像合成 -->
+
+<div id="js--comment">
+	<p class="AFS18 AFWBld">■ お名前</p>
+	<p class="AMBm20"><input type="text" id="js--ipt--name" class="SIpt1" name="name1"></p>
+	
+	<p class="AFS18 AFWBld">■ メッセージ</p>
+	<p class="AMBm20"><textarea class="STxa1" id="js--ipt--desc" name="desc1"></textarea></p>
+<!-- /js--comment --></div>
+
+
+<p class="btn1"><a class="btn1Inner" id="js--photo--post" href="#">メッセージをおくる</a></p>
+<canvas id="js--post--canvas" width="600" height="600" style=" visibility:hidden;"></canvas>
+</form>
+<!-- /.secEdit --></div>
+
+<!-- /#main --></section>
+
+<footer id="footer">
+  <p class="btnHome"><a href="/">トップページへ</a></p>
+  <p>COPYRIGHT(C) 記念物制作委員会</p>
+<!-- /#footer --></footer>
+
+<!-- /LW --></div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+
+<script>
+$(document).ready(function() {
+
+var _photoWid1;
+var _photoHgt1;
+
+/* 画像の読み込み */
+$('#js--file--frame').change(function(){
+  $('#js--PhotoFrame').css('display','block');
+  $('#js--photo--post').css('display','block');
+
+  var fileList = document.getElementById("js--file--frame").files;
+  
+  var CAN = document.getElementById("js--canvas");
+
+  var ctx = CAN.getContext('2d');
+  var fileContents = "";
+  var i = 0;
+  
+    var reader = new FileReader();
+  
+    //INFO.innerHTML = fileList[i].fileName+"を読み込みます。";
+    if (fileList[i].type == "text/plain"){
+      reader.readAsText(fileList[i], "utf-8");
+    }else{
+      reader.readAsDataURL(fileList[i], "utf-8");
+    }
+    reader.onload = function(evt){
+        //INFO.innerHTML = fileList[i].fileName+"の読み込み中…";  
+    
+        var DATA = evt.target.result;
+        var mtc = /^data:([^\/]+)\/[^,]+,/.exec(DATA);
+        if(mtc){
+          var typ = mtc[1], b64 = DATA.replace(mtc[0], "");
+          switch(typ){
+                  case "image" :
+            img = new Image();
+            img.src = DATA;
+            img.onload = function(){
+            var S = img.height/img.width;
+            var _wid1 = img.width;
+            var _hgt1 = img.height;
+            
+            CAN.width = _wid1;
+            CAN.height = _hgt1;
+
+            ctx.drawImage(img,0,0,_wid1,_hgt1);
+            
+            $('#js--Photo1').css('display','none');
+            $('#js--PhotoFrame1').css('display','block');
+            $('#js--comment').css('display','block');
+            $('.SPBtn1').css('display','block');
+
+            $('#js--FrameSelect').css('display','block');
+            $('.js--radio--btn').change(function(){
+              $('.secPhotoFrame1 .secFrame').css('background-image','url('+$(this).val() + ')' );
+            });
+            
+            
+
+/* 画像編集 */
+//画像編集
+var _maxScale1 = 10;
+var _rangeScale1 = 0.1;
+var _scale1 = 1;
+
+var _frameHgt1 = 600;
+
+$('#js--PhotoFrame .secPhotoFrameInner').height(_frameHgt1);
+$('#js--PhotoFrame .secDrag').height(600).width(600);
+
+$('#js--PhotoFrame .secDragInner').height(_hgt1).width(_wid1);
+
+$('#js--PhotoFrame .secFrame').height(_frameHgt1);
+$('#js--PhotoFrame .secDragInner').css('top', _frameHgt1/2+'px');
+$('#js--PhotoFrame .secImg').css('top', _frameHgt1/2+'px');
+
+  $('#js--PhotoFrame .secDragInner').draggable({
+    drag:function(){
+      $('#js--PhotoFrame .secImg').css({
+        'left':$('#js--PhotoFrame .secDragInner').css('left'),
+        'top':$('#js--PhotoFrame .secDragInner').css('top'),
+      });
+    },
+    stop:function(){
+      $('#js--PhotoFrame .secImg').css({
+        'left':$('#js--PhotoFrame .secDragInner').css('left'),
+        'top':$('#js--PhotoFrame .secDragInner').css('top'),
+      });
+    }
+  });
+
+
+$('#js--PhotoFrame .secImg canvas').css({
+  'margin-top':-(_hgt1/2)+'px',
+  'margin-left':-(_wid1/2)+'px'
+});
+$('#js--PhotoFrame .secDragInner').width(_photoWid1).height(_photoHgt1).css({
+  'margin-top':-(_hgt1/2)+'px',
+  'margin-left':-(_wid1/2)+'px'
+});
+
+$('#js--PhotoFrame .secSliderInner').slider({
+  range: 1,
+  value: 50,
+  min: 5,
+  max: 100,
+  slide: function( event, ui ) {
+    
+    if( ui.value > 50 ){
+      _scale1 = 1 + ( ui.value - 50 )*0.2;
+    }
+
+    if( ui.value <= 50 ){
+      _scale1 = ui.value/50;
+    }
+
+    var _w1 = _wid1 * _scale1;
+    var _h1 = _hgt1 * _scale1;
+    $('#js--PhotoFrame .secImg canvas').width(_w1).height(_h1).css({
+      'margin-top':-(_h1/2)+'px',
+      'margin-left':-(_w1/2)+'px'
+    });
+    $('#js--PhotoFrame .secDragInner').width(_w1).height(_h1).css({
+      'margin-top':-(_h1/2)+'px',
+      'margin-left':-(_w1/2)+'px'
+    });
+
+
+  }
+});
+
+$('#js--PhotoFrame .plus a').click(function(){
+  if( _scale1 < 9.9 ){
+  _scale1+=0.1;
+  }
+  var _w1 = _wid1 * _scale1;
+  var _h1 = _hgt1 * _scale1;
+  $('#js--PhotoFrame .secImg canvas').width(_w1).height(_h1).css({
+      'margin-top':-(_h1/2)+'px',
+      'margin-left':-(_w1/2)+'px'
+    });
+    $('#js--PhotoFrame .secDragInner').width(_w1).height(_h1).css({
+      'margin-top':-(_h1/2)+'px',
+      'margin-left':-(_w1/2)+'px'
+    });
+  /* スライダーへ反映 */
+  var _slideVal;
+  if( _scale1 > 1 ){
+    _slideVal = (_scale1*5)+50;
+  }
+  else {
+    _slideVal = _scale1*50;
+  }
+  $('#js--PhotoFrame .secSliderInner').slider("value",_slideVal);
+  return false;
+});
+
+$('#js--PhotoFrame .minus a').click(function(){
+  if( _scale1 <= 0.2 ){
+  }
+  else {
+    _scale1-=0.1;
+  }
+  var _w1 = _wid1 * _scale1;
+  var _h1 = _hgt1 * _scale1;
+  $('#js--PhotoFrame .secImg canvas').width(_w1).height(_h1).css({
+      'margin-top':-(_h1/2)+'px',
+      'margin-left':-(_w1/2)+'px'
+    });
+    $('#js--PhotoFrame .secDragInner').width(_w1).height(_h1).css({
+      'margin-top':-(_h1/2)+'px',
+      'margin-left':-(_w1/2)+'px'
+    });
+
+  /* スライダーへ反映 */
+  var _slideVal;
+  if( _scale1 > 1 ){
+    _slideVal = (_scale1*5)+50;
+  }
+  else {
+    _slideVal = _scale1*50;
+  }
+  $('#js--PhotoFrame .secSliderInner').slider("value",_slideVal);
+  return false;
+});
+
+$('#js--PhotoFrame .restart a').click(function(){
+  var _posY1 = _hgt1/2+'px';
+  var _posX1 = _wid1/2+'px';
+  $('#js--PhotoFrame .secDragInner').height(_hgt1).width(_wid1).css('top','300px').css('left','300px').css('margin-top','-'+_posY1).css('margin-left','-'+_posX1);
+  $('#js--PhotoFrame .secImg').css('top','300px').css('left','300px');
+  $('#js--PhotoFrame .secImg canvas').css('margin-top','-'+_posY1).css('margin-left','-'+_posX1).width(_wid1).height(_hgt1);
+  return false;
+});
+
+$('a#js--photo--post').click(function(){
+  $('body').append('<div id="overlay"></div>');
+  $('#js--photo--post').fadeOut();
+
+  var _posX = parseInt($('.secPhotoFrame .secImg').css('left').replace('px','')) + parseInt($('#js--canvas').css('margin-left').replace('px',''));
+  var _posY = parseInt($('.secPhotoFrame .secImg').css('top').replace('px','')) + parseInt($('#js--canvas').css('margin-top').replace('px',''));
+
+  var getCanvas = document.getElementById("js--canvas");
+  var postImage = getCanvas;
+
+  var postCanvas = document.getElementById("js--post--canvas");
+  var postContext = postCanvas.getContext("2d");
+  postContext.drawImage(postImage, _posX, _posY, $('#js--PhotoFrame .secImg canvas').width() , $('#js--PhotoFrame .secImg canvas').height());
+  var dataUrl = postCanvas.toDataURL();
+  dataUrl = dataUrl.replace('data:image/png;base64,', '');
+
+  $.post(
+      '/SetCard',
+      {
+        'framePath': $("input[name='framePath']:checked").val(),
+        'name1' : $('#js--ipt--name').val(),
+        'desc1' : $('#js--ipt--desc').val(),
+        'img1' : dataUrl
+      },
+      function(result){
+        document.location = result;
+      }
+    );
+
+});
+
+                     }
+                     img.onerror = function(){
+                       alert("の読み込みに失敗しました。");  
+                     }
+                    break;
+                  default : 
+                    alert("画像のみ読み込めます。"); 
+                    break;
+        }
+      } 
+    }
+    reader.onerror = function(evt){
+        alert("の読み込みに失敗しました。");
+    }
+
+});
+
+$('#js--FrameSelect li:first-child .js--radio--btn').attr('checked', 'checked');
+  
+});
+</script>
+
+</body>
+</html>
